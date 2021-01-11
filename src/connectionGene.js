@@ -7,6 +7,7 @@ class connectionGene {
         this.weight = w;
         this.enabled = enbl;
         this.innovationNo = inno;
+        
 
     }
     //Make a copy function that returns a deep copy of the object
