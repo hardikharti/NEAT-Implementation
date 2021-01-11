@@ -1,5 +1,5 @@
 class Genome{
-    constructor(input_size,output_size,neat){
+    constructor(input_size,output_size,innv){
         this.input_size = input_size;
         this.output_size = output_size;
         this.node_size = 0;
@@ -11,7 +11,7 @@ class Genome{
         this.node_adj = []; //INDEX -> node_id  VALUE -> Array of innovation no.s, the node is connected
         this.layers = []; //INDEX -> layer VALUE -> Array of node_ids
         this.cg_map = {}; //KEY -> innovation_no. VALUE -> connectionGene_index in this.cgs
-        this.innov = neat;
+        this.innov = innv;
     }
 
     // <=====HELPERS=====> //
@@ -23,7 +23,7 @@ class Genome{
 
         if(!this.layers[node.layer])
             this.layers[node.layer] = [];
-            
+
         this.layers[node.layer].push(node.id);
 
         this.node_size++;
