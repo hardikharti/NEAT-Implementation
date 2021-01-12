@@ -30,6 +30,7 @@ class Genome{
         this.layer_size = Math.max(this.layer_size,node.layer+1);
     }
 
+    
     addConnection(cg){
         let i;
         for(i = this.cgs.length-1;i >= 0;i--){

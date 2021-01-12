@@ -2,8 +2,8 @@
 class connectionGene {
     //Add all attributes from paper
     constructor(from, to, w, inno,enbl) {
-        this.out = from;
-        this.in = to;
+        this.out = to;
+        this.in = from;
         this.weight = w;
         this.enabled = enbl;
         this.innovationNo = inno;

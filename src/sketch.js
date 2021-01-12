@@ -1,5 +1,8 @@
 let innov = new InnovNum();
 let genome = new Genome(5,2,innov);
+// let g2 = new Genome(5,2,innov);
+// g2.createInitialNodes();
+// g2.createDenseGenome()
 genome.createInitialNodes();
 genome.createDenseGenome();
 
