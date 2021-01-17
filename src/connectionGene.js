@@ -15,7 +15,10 @@ class connectionGene {
     if (changeProb < 0.1) {
       this.weight = random(-1, 1);
     } else {
-      this.weight += randomGaussian() / 25; //returns a mean of 0 and standard deviation of 0.04
+      var plusOrMinus = [-1, 1][(Math.random() * 2) | 0];
+      var changeValue = (Math.random() * 0.1);
+
+      this.weight = this.weight + (plusOrMinus * changeValue * this.weight);
 
       if (this.weight > 1) {
         this.weight = 1;

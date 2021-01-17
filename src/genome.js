@@ -101,8 +101,11 @@ class Genome {
   mutate() {}
 
   mutateWeight() {
-    for (var i = 0; i < this.cgs.length; i++) {
-      this.cgs[i].mutateCgWeight();
+    var changeProb = Math.random(1);
+    if (changeProb <= 0.8) {
+      for (var i = 0; i < this.cgs.length; i++) {
+        this.cgs[i].mutateCgWeight();
+      }
     }
   }
 
