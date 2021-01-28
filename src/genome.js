@@ -109,7 +109,22 @@ class Genome {
     }
   }
 
-  mutateNode() {}
+  mutateNode() {
+    var prob=Math.random(1);
+    if(prob<=0.01){
+      let connectionIndex = Math.floor(Math.random() * this.cgs.length);
+      let connectionPicked = this.cgs[connectionIndex];
+      connectionPicked.enabled=false;
+      this.shiftLayer(connectionPicked.in.layer+1);
+      let newNode = new Node(this.nodes.length, connectionPicked.in.layer + 1, "hidden");
+      this.addNode(newNode);
+      this.layer_size++;
+      let connection1=this.innov.createConnection(connectionPicked.in, newNode, 1 );
+      let connection1=this.innov.createConnection(newNode, connectionPicked.out, connectionPicked.weight );
+      this.addConnection(connection1);
+      this.addeConnection(connection2);
+    }
+  }
 
   mutateCg() {}
 }
