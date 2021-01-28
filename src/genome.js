@@ -97,6 +97,25 @@ class Genome {
     }
   }
 
+  fullConnected(){
+    let rem_nodes=this.node_size;
+    let total_connection=0;
+    for(let i=0; i<this.layers.length; i++){
+      rem_nodes=rem_nodes-this.layers[i].length;
+      total_connection+=rem_nodes*this.layers[i].length;
+    }
+    return total_connection==this.cg_size;
+  }
+
+  connectedNodes(node1, node2){
+    for(let i=0; i<this.cgs.length; i++){
+      if((this.cgs[i].in==node1 && this.cgs[i].out==node2) 
+      || (this.cgs[i].in==node2 && this.cgs[i].out==node1)){
+        return true;
+      }
+    }
+    return false;
+  }
   // <====MUTATION====> //
   mutate() {}
 
@@ -110,21 +129,43 @@ class Genome {
   }
 
   mutateNode() {
-    var prob=Math.random(1);
+    let prob=Math.random(1);
     if(prob<=0.01){
       let connectionIndex = Math.floor(Math.random() * this.cgs.length);
       let connectionPicked = this.cgs[connectionIndex];
       connectionPicked.enabled=false;
-      this.shiftLayer(connectionPicked.in.layer+1);
+      if(connectionPicked.out.layer-connectionPicked.in.layer==1)
+       this.shiftLayer(connectionPicked.in.layer+1);
       let newNode = new Node(this.nodes.length, connectionPicked.in.layer + 1, "hidden");
       this.addNode(newNode);
-      this.layer_size++;
-      let connection1=this.innov.createConnection(connectionPicked.in, newNode, 1 );
-      let connection1=this.innov.createConnection(newNode, connectionPicked.out, connectionPicked.weight );
+      let connection1=this.innov.createConnection(connectionPicked.in, newNode, 1, true);
+      let connection2=this.innov.createConnection(newNode, connectionPicked.out, connectionPicked.weight, true );
       this.addConnection(connection1);
-      this.addeConnection(connection2);
+      this.addConnection(connection2);
     }
   }
 
-  mutateCg() {}
+  mutateCg() {
+    let prob = Math.random(1);
+    if(prob<=0.05){
+      if(this.fullConnected())
+        return;
+      while(true){
+        var node1=Math.floor(Math.random()*this.node_size)
+        var node2=Math.floor(Math.random()*this.node_size)
+        if(this.nodes[node1].layer!=this.nodes[node2].layer && !this.connectedNodes(this.nodes[node1], this.nodes[node2])){
+          break;
+        }
+      }
+      
+      // switch the values if node1 has higher layer than node 2
+      if (this.nodes[node1].layer > this.nodes[node2].layer) {
+        let temp = node1;
+        node1 = node2;
+        node2 = temp;
+      }
+      let newConnection=this.innov.createConnection(this.nodes[node1], this.nodes[node2], 2*Math.random()-1, true);
+      this.addConnection(newConnection);
+    }
+  }
 }
