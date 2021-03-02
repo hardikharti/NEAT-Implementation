@@ -9,7 +9,7 @@ class Member{
         if(member.fitness < this.fitness)
 			child.genome = this.genome.crossover(member.genome);
 		else
-			child.genome = parent.genome.crossover(this.genome);
+			child.genome = member.genome.crossover(this.genome);
         child.mutate();
     }
 }

@@ -24,7 +24,7 @@ class Specie {
     }
     addClient(member){
         if(this.representative.genome.distance(member)<this.threshold){
-            this.members.push(member)
+            this.members.push(member);
         }
     }
 
@@ -64,7 +64,7 @@ class Specie {
         this.normalizefitness();
         this.fillmatingpool();
         let children = [];
-        for(let i=0; i<members.length; i++){
+        for(let i=0; i<this.members.length; i++){
             let first = this.selectMember();
             let second = this.selectMember();
             if (first.fitness>second.fitness){
