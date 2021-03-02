@@ -10,6 +10,7 @@ class Member{
 			child.genome = this.genome.crossover(member.genome);
 		else
 			child.genome = member.genome.crossover(this.genome);
-        child.mutate();
+        child.genome.mutate();
+        return child;
     }
 }
