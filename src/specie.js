@@ -12,11 +12,20 @@
 // class member
 //     fitness
 //     genome
-
+let InputN = 2;
+let OutputN = 1;
 class Specie {
     constructor(rep) {
         this.representative = rep;
         this.members = [rep];
+        this.threshold=3;
+        this.matingPool=[];
+        this.generation=0;
+    }
+    addClient(member){
+        if(this.representative.genome.distance(member)<this.threshold){
+            this.members.push(member)
+        }
     }
 
     changeRep() {
@@ -42,4 +51,46 @@ class Specie {
             n--;
         }
     }
+    normalizefitness(){
+        let totalfitness=0;
+        this.members.forEach((member)=>{
+            totalfitness+=member.fitness;
+        })
+        this.members.forEach((member)=>{
+            member.fitness/=totalfitness;
+        })
+    }
+    nextGen(){
+        this.normalizefitness();
+        this.fillmatingpool();
+        let children = [];
+        for(let i=0; i<members.length; i++){
+            let first = this.selectMember();
+            let second = this.selectMember();
+            if (first.fitness>second.fitness){
+                children.push(first.crossover(second));
+            }
+            else{
+                children.push(second.crossover(first));
+            }
+        }
+        this.generation++;
+        return children;
+    }
+    fillmatingpool(){
+        this.matingPool.splice(0, this.matingPool.length);
+        this.members.forEach((member, memberIndex)=>{
+            let n =member.fitness*100;
+            let i =0;
+            while(i<n){
+                this.matingPool.push(memberIndex);
+                i++;
+            }
+        })
+    }
+    selectMember(){
+       let random = Math.floor(Math.random() * this.matingPool.length);
+       return this.members[this.matingPool[random]]
+    }
+
 }
