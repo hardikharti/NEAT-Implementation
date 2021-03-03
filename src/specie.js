@@ -30,15 +30,15 @@ class Specie {
 
     changeRep() {
         //picking random element
-        var randomRep = members[Math.floor(Math.random() * members.length)];
+        var randomRep = this.members[Math.floor(Math.random() * this.members.length)];
 
         //making sure the element isn't the current representative
-        while (randomRep == representative) {
-            randomRep = members[Math.floor(Math.random() * members.length)];
+        while (randomRep == this.representative) {
+            randomRep = this.members[Math.floor(Math.random() * this.members.length)];
         }
 
         //setting representative to the randomly picked randomRep
-        representative = randomRep;
+        this.representative = randomRep;
     }
 
     killMembers(n) {
@@ -48,7 +48,7 @@ class Specie {
             return;
         }
         while (n > 0) {
-            members.pop();
+            this.members.pop();
             n--;
         }
     }
