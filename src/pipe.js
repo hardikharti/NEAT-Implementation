@@ -1,0 +1,8 @@
+class Pipe{
+    constructor(){
+
+    }
+    show(){
+        
+    }
+}
