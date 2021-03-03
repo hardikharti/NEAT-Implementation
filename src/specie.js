@@ -23,7 +23,7 @@ class Specie {
         this.generation=0;
     }
     addClient(member){
-         if(this.representative.genome.distance(member)<this.threshold){
+         if(this.representative.genome.distance(member.genome)<this.threshold){
             this.members.push(member);
         }
     }
