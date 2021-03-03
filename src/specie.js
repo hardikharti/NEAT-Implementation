@@ -23,7 +23,7 @@ class Specie {
         this.generation=0;
     }
     addClient(member){
-        if(this.representative.genome.distance(member)<this.threshold){
+         if(this.representative.genome.distance(member)<this.threshold){
             this.members.push(member);
         }
     }
@@ -42,6 +42,7 @@ class Specie {
     }
 
     killMembers(n) {
+        this.sortmembers()
         if (n > this.members.length) {
             console.log("make sure n is less than or equal to the number of members in the species");
             return;
@@ -60,11 +61,11 @@ class Specie {
             member.fitness/=totalfitness;
         })
     }
-    nextGen(){
+    nextGen(n){
         this.normalizefitness();
         this.fillmatingpool();
         let children = [];
-        for(let i=0; i<this.members.length; i++){
+        for(let i=0; i<n; i++){
             let first = this.selectMember();
             let second = this.selectMember();
             if (first.fitness>second.fitness){
@@ -93,4 +94,9 @@ class Specie {
        return this.members[this.matingPool[random]]
     }
 
+    sortmembers(){
+        this.members.sort(function(a, b) {
+            return b.fitness - a.fitness;
+          });
+    }
 }
