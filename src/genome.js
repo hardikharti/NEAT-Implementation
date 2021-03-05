@@ -224,7 +224,7 @@ class Genome {
 
   // <====GENOME AS OUTPUT OR PARAM====> //
   crossover(g2) {
-    let childGenome = new Genome(this.input_size, this.output_size, this.neat);
+    let childGenome = new Genome(this.input_size, this.output_size, this.innov);
     for (let node of this.nodes) {
       childGenome.addNode(node.deepCopy());
     }
@@ -304,7 +304,7 @@ class Genome {
   }
 
   deepCopy() {
-    const copyGenome = new Genome(this.input_size, this.output_size, this.neat);
+    const copyGenome = new Genome(this.input_size, this.output_size, this.innov);
     for (let node of this.nodes) {
       copyGenome.addNode(node.deepCopy());
     }
