@@ -45,11 +45,14 @@ function draw() {
         pipes[i].show();
         pipes[i].update();
 
-        if (pipes[i].hit(bird, height)) {
+        if (pipes[i].hit(bird, height) || bird.y==height) {
             console.log("hit");
         }
         if (pipes[i].offscreen()) {
             pipes.splice(i, 1);
+            
+        }
+        if(pipes[i].score()){
             currentScore++;
         }
     }
