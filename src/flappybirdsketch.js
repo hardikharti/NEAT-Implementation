@@ -33,7 +33,6 @@ function draw() {
     background(0);
 
     image(bg, bgX, 0, bg.width, height);
-
     bird.update();
     bird.show();
 
@@ -46,7 +45,9 @@ function draw() {
         pipes[i].update();
 
         if (pipes[i].hit(bird, height) || bird.y==height) {
+            bird.hit=true;
             console.log("hit");
+            
         }
         if (pipes[i].offscreen()) {
             pipes.splice(i, 1);
