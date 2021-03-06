@@ -12,7 +12,6 @@ function preload() {
   }
 
 function setup(){
-    console.log("k");
     createCanvas(800, 550);
     bird = new Bird();
 }
