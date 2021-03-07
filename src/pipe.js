@@ -1,7 +1,7 @@
 class Pipe {
     constructor() {
         this.spacing=125;
-        this.top = random((height - 55) / 2);
+        this.top = random((height - this.spacing));
         this.bottom = this.top+this.spacing;
         this.pos= random
         this.x = width;
@@ -25,6 +25,7 @@ class Pipe {
 
     update() {
         this.x -= this.speed;
+        
     }
 
     offscreen() {
@@ -44,7 +45,9 @@ class Pipe {
     }
     return false;
     }
-
+    stop(){
+        this.speed=0;
+    }
     hit(bird, height) {
 
         if (bird.y < this.top || bird.y > (this.bottom))

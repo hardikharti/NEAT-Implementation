@@ -33,8 +33,15 @@ function draw() {
     background(0);
 
     image(bg, bgX, 0, bg.width, height);
-    bird.update();
-    bird.show();
+    if(!bird.hit){
+        bird.update();
+        bird.show();
+    }
+    else{
+        for (var i = pipes.length - 1; i >= 0; i--) {
+            pipes[i].stop();
+        }
+    }
 
     if (frameCount % 100 == 0) {
         pipes.push(new Pipe());
