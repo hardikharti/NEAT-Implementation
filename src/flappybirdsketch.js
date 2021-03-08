@@ -253,25 +253,14 @@ function nextGeneration() {
   
 
 function displayScore(currentScore){
-    if (currentScore < 10) {
-        image(digitsImage[currentScore], width / 2 - scoreW / 2, 100, scoreW, scoreH);
-    }
+    output = [],
+    numberInStr = currentScore.toString();
 
-    else if (currentScore >= 10 && currentScore <= 99) {
-        let firstNumber = floor(currentScore / 10);
-        let secondNumber = currentScore % 10;
-        image(digitsImage[firstNumber], width / 2 - scoreW, 100, scoreW, scoreH);
-        image(digitsImage[secondNumber], width / 2, 100, scoreW, scoreH);
+  for (var i = 0, len = numberInStr.length; i < len; i += 1) {
+    output.push(+numberInStr.charAt(i));
+  }
 
-    }
-
-    else if (currentScore >= 100) {
-        let firstNumber = floor(currentScore / 100);
-        let secondNumber = floor((currentScore - firstNumber * 100) / 10);
-        let thirdNumber = floor(currentScore - firstNumber * 100 - secondNumber * 10);
-
-        image(digitsImage[firstNumber], width / 2 - scoreW * 3 / 2, 100, scoreW, scoreH);
-        image(digitsImage[secondNumber], width / 2 - scoreW / 2, 100, scoreW, scoreH);
-        image(digitsImage[thirdNumber], width / 2 + scoreW / 2, 100, scoreW, scoreH);
-    }
+  output.forEach((digit, index) => {
+    image(digitsImage[digit], width / 2 - (scoreW * (output.length - index * 2)) / 2, 100, scoreW, scoreH);
+  });
 }
