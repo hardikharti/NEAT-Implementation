@@ -1,11 +1,11 @@
 class Pipe {
     constructor() {
-        this.spacing=125;
+        this.spacing=175;
         this.top = random((height - this.spacing));
         this.bottom = this.top+this.spacing;
         this.pos= random
         this.x = width;
-        this.w = 50;
+        this.w = 60;
         this.speed = 2;
         this.hasHit = false;
         this.flag=0;
@@ -35,22 +35,22 @@ class Pipe {
         else
             return false;
     }
-    score(){
+    score(bird){
         if(this.flag==0){
             if(this.x<bird.x){
-            this.flag=1;
-            return true;    
+                this.flag=1;
+                return true;    
             }
             
-    }
-    return false;
+        }
+        return false;
     }
     stop(){
         this.speed=0;
     }
     hit(bird, height) {
 
-        if (bird.y < this.top || bird.y > (this.bottom))
+        if (bird.y - bird.r/2 < this.top || bird.y + bird.r/2 > (this.bottom))
             if (bird.x > this.x && bird.x < this.x + this.w) {
                 // console.log(bird.y);
                 // console.log(height);
