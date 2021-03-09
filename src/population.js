@@ -175,12 +175,18 @@ class Population{
             copyGenome.addNode(new Node(node.id,node.layer));
         }
         copyGenome.biases = obj.biases.slice();
-        for(let link of obj.links){
-            let from = copyGenome.nodes[link.from.id];
-            let to = copyGenome.nodes[link.to.id];
-            let copyLink = new Link(from,to,link.weight,link.enabled,link.innov_no);
-            copyGenome.addLink(copyLink);
-        }
+        for (let cg of obj.cgs) {
+            let from = copyGenome.nodes[cg.in.id];
+            let to = copyGenome.nodes[cg.out.id];
+            let copycg = new connectionGene(from,to,cg.weight,cg.innovationNo,cg.enabled);
+            copyGenome.addConnection(copycg);
+          }
+        // for(let link of obj.links){
+        //     let from = copyGenome.nodes[link.from.id];
+        //     let to = copyGenome.nodes[link.to.id];
+        //     let copyLink = new Link(from,to,link.weight,link.enabled,link.innov_no);
+        //     copyGenome.addLink(copyLink);
+        // }
         return copyGenome;
     }
 }

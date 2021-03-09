@@ -1,3 +1,8 @@
+let TRAINING = 'training';
+let PLAYING = 'playing';
+let SHOWNN = 'shownn';
+let RUNBEST = 'runbest';
+let state = TRAINING;
 var bird;
 var birdSprite;
 var bg;
@@ -35,15 +40,17 @@ let highScore = 0;
 let runBest = false;
 let playing = false;
 let showNN = false;
-let runBestButton,playButton, showNNButton;
+let runBestButton,playButton, showNNButton, trainButton;
 let player;
-let bestBird;
+let savedBird, bestBird;
+let showBird;
 let gen,stats;
 let backgroundImg, birdImg;
 let playerGravity = 0.5
 // let dead = false;
 
 function preload() {
+	gen = loadJSON('best_member2.json');
     birdSprite = loadImage('Images/bird.png');
     bg = loadImage('Images/bg2.png');
     pipeTop = loadImage('Images/pipeNorth.png');
@@ -67,12 +74,16 @@ function setup() {
     highScoreSpan = select('#hs');
     allTimeHighScoreSpan = select('#ahs');
     statsSpan = select('#stats');
+	trainButton = select('#train');
+	trainButton.mousePressed(toggleTrain);
     runBestButton = select('#best');
-    runBestButton.mousePressed(toggleState);
+    runBestButton.mousePressed(toggleBest);
     playButton = select('#play');
     playButton.mousePressed(togglePlay);
     showNNButton = select('#showNN');
     showNNButton.mousePressed(toggleShowNN);
+
+	
     // Create a population
     for (let i = 0; i < totalPopulation; i++) {
         let bird = new Bird();
@@ -81,145 +92,222 @@ function setup() {
     population = new Population(5,2,activeBirds.slice(),innv);
     population.initialPop();
     currentScore = 0;
+	let g = population.deserialize(gen);
+  	savedBird = new Bird(g);
 }
 
 // Toggle the state of the simulation
-function toggleState() {
-  runBest = !runBest;
-  // Show the best bird
-  if (runBest) {
-    resetGame();
-    runBestButton.html('continue training');
-    if(playing)togglePlay()
-    // Go train some more
-  } else {
-    nextGeneration();
-    runBestButton.html('run pre-trained bird');
-  }
+function toggleTrain() {
+	if(dead)loop();
+	state = TRAINING;
+	nextGeneration();
+}
+
+function toggleBest(){
+	if(dead)loop();
+	state = RUNBEST;
+	showBird = savedBird;
 }
 
 function togglePlay(){
-  playing = !playing;
-  if (playing) {
+	if(dead)loop();
+  	state = PLAYING
     resetGame();
     speedSlider.value(1)
-    playButton.html('train');
-    tipSpan.html('Press space to jump')
-    // Go train some more
-  } else {
-    nextGeneration();
-    playButton.html('play');
-    tipSpan.html('')
-    if(dead){
-      dead = false;
-      loop()
-    }
-  }
+    tipSpan.html('Press space to jump');
 }
 
 function toggleShowNN(){
-  showNN = !showNN;
-  if(showNN){
-    showNNButton.html('Back to Game');
-  }
-  else{
-    showNNButton.html('Show Neural Network');
-  }
+	if(dead)loop();
+	state = SHOWNN;
 }
 
 function draw() {
     background(0);
-    if(showNN){
+
+    if(state == SHOWNN){
         background(0);
-        let g;
-        if(runBest){
-            g = bestBird.genome
-        }
-        else{
-            g = activeBirds.length == 0?bestBird.genome:activeBirds[0].genome
-        }
+        let g = showBird.genome;
         drawGenome(g,50,50,height-50,width-50);
-        return;
     }
-    image(bg, bgX, 0, bg.width, height);
-
-    // Should we speed up cycles per frame
-    let cycles = speedSlider.value();
-    speedSpan.html(cycles);
-
-    // How many times to advance the game
-    for (let n = 0; n < cycles; n++) {
-        // Show all the pipes
-        for (let i = pipes.length - 1; i >= 0; i--) {
-            pipes[i].update();
-            if (pipes[i].offscreen()) {
-                pipes.splice(i, 1);
-            }
-            if(activeBirds.length > 0 && pipes[i].score(activeBirds[0])){
-                currentScore++;
-            }
-        }
-        
-        for (let i = activeBirds.length - 1; i >= 0; i--) {
-            let bird = activeBirds[i];
-            // Bird uses its brain!
-            bird.think(pipes);
-            bird.update();
-
-            // Check all the pipes
-            for (let j = 0; j < pipes.length; j++) {
-                // It's hit a pipe
-                if (pipes[j].hit(activeBirds[i])) {
-                    // Remove this bird
-                    activeBirds.splice(i, 1);
-                    break;
-                }
-            }
-
-            if (bird.bottomTop()) {
-                activeBirds.splice(i, 1);
-            }
-        }
-
-        // Add a new pipe every so often
-        if (counter % 100 == 0) {
-            pipes.push(new Pipe());
-        }
-        counter++;
-        
+    else if(state == TRAINING){
+		image(bg, bgX, 0, bg.width, height);
+		let cycles = speedSlider.value();
+		speedSpan.html(cycles);
+		for (let n = 0; n < cycles; n++) {
+			for (let i = pipes.length - 1; i >= 0; i--) {
+				pipes[i].update();
+				if (pipes[i].offscreen()) {
+					pipes.splice(i, 1);
+				}
+				if(activeBirds.length > 0 && pipes[i].score(activeBirds[0])){
+					currentScore++;
+				}
+			}
+			if (counter % 100 == 0) {
+				pipes.push(new Pipe());
+			}
+			counter++;
+			
+			for (let i = activeBirds.length - 1; i >= 0; i--) {
+				let bird = activeBirds[i];
+				bird.think(pipes);
+				bird.update();
+				for (let j = 0; j < pipes.length; j++) {
+					if (pipes[j].hit(activeBirds[i])) {
+						activeBirds.splice(i, 1);
+						break;
+					}
+				}
+				if (bird.bottomTop()) {
+					activeBirds.splice(i, 1);
+				}
+			}
+		}
+		for (let i = 0; i < pipes.length; i++) {
+			pipes[i].show();
+		}
+		for (let i = 0; i < activeBirds.length; i++) {
+			activeBirds[i].show();
+		}
+		displayScore(currentScore);
+		if(activeBirds.length > 0){
+			showBird = activeBirds[0];
+			drawGenome(activeBirds[0].genome,0.6*width,0,height,width,0.4);
+		}
+		if(currentScore > highScore){
+			highScore = currentScore;
+			bestBird = showBird;
+		}
+		highScoreSpan.html(currentScore);
+  		allTimeHighScoreSpan.html(highScore);
+		if (activeBirds.length == 0) {
+			currentScore = 0;
+			nextGeneration();
+		}
     }
-
+	else if(state == PLAYING){
+		image(bg, bgX, 0, bg.width, height);
+		for (let i = pipes.length - 1; i >= 0; i--) {
+			pipes[i].update();
+			if (pipes[i].offscreen()) {
+				pipes.splice(i, 1);
+			}
+			if(pipes[i].score(player)){
+				currentScore++;
+			}
+		}
+		if (counter % 100 == 0) {
+			pipes.push(new Pipe());
+		}
+		counter++;
+		player.update();
+		for (let j = 0; j < pipes.length; j++) {
+			if (pipes[j].hit(player)) {
+				dead = true;
+				break;
+			}
+		}
+		if (player.bottomTop()) {
+			dead = true;
+		}
+		for (let i = 0; i < pipes.length; i++) {
+			pipes[i].show();
+		}
+		player.show();
+		displayScore(currentScore);
+		if(currentScore > highScore){
+			highScore = currentScore;
+		}
+		highScoreSpan.html(currentScore);
+  		allTimeHighScoreSpan.html(highScore);
+		if(dead){
+			textSize(40);
+			textAlign(CENTER,CENTER);
+			fill(255);
+			text('Click to Play',width/2,height/2);
+			noLoop();
+		}
+	}
+    else if(state == RUNBEST){
+		
+		image(bg, bgX, 0, bg.width, height);
+		let cycles = speedSlider.value();
+		speedSpan.html(cycles);
+		for (let n = 0; n < cycles; n++) {
+			for (let i = pipes.length - 1; i >= 0; i--) {
+				pipes[i].update();
+				if (pipes[i].offscreen()) {
+					pipes.splice(i, 1);
+				}
+				if(pipes[i].score(savedBird)){
+					currentScore++;
+				}
+			}
+			if (counter % 100 == 0) {
+				pipes.push(new Pipe());
+			}
+			counter++;
+			savedBird.think(pipes);
+			savedBird.update();
+			for (let j = 0; j < pipes.length; j++) {
+				if (pipes[j].hit(savedBird)) {
+					resetGame();
+					break;
+				}
+			}
+			if (savedBird.bottomTop()) {
+				resetGame();
+			}
+		}
+		for (let i = 0; i < pipes.length; i++) {
+			pipes[i].show();
+		}
+		savedBird.show();
+		displayScore(currentScore);
+		if(currentScore > highScore){
+			highScore = currentScore;
+		}
+		highScoreSpan.html(currentScore);
+  		allTimeHighScoreSpan.html(highScore);
+	}
     
-    for (let i = 0; i < pipes.length; i++) {
-        pipes[i].show();
-    }
-    for (let i = 0; i < activeBirds.length; i++) {
-        activeBirds[i].show();
-    }
-      // If we're out of birds go to the next generation
-    if (activeBirds.length == 0) {
-        currentScore = 0;
-        nextGeneration();
-    }
-    displayScore(currentScore);
+    
 }
+
+
+function mousePressed(){
+	if(state == PLAYING && dead){
+		dead = false;
+		loop();
+		resetGame();
+	}
+}
+
 function keyPressed() {
-    if (key == ' ') {
-        bird.up();
-    }
+	if(key == 'S'){
+		population.saveMember(activeBirds[0].genome);
+	}
+	if(state == PLAYING){
+		if (key == ' ') {
+			player.up();
+		}
+	}
     return false;
 }
 
 function resetGame() {
+	// loop();
     counter = 0;
-    // Resetting best bird score to 0
-    if (bestBird && runBest) {
-      bestBird.score = 0;
-    }
-    if(playing){
-      player = new Bird()
-      player.gravity = playerGravity;
-    }
+    currentScore = 0;
+	// for (let i = 0; i < totalPopulation; i++) {
+    //     let bird = new Bird();
+    //     activeBirds[i] = bird;
+    // }
+    // population = new Population(5,2,activeBirds.slice(),innv);
+    // population.initialPop();
+	player = new Bird();
+	player.gravity = playerGravity;
     pipes = [];
   }
   function printStats(){
